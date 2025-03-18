@@ -1,0 +1,336 @@
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+// Class representing a Product
+class Product {
+    private String description; // Description of the product
+    private double price;       // Price of the product
+    private String seller;      // Name of the seller
+    private Date addedDate;     // Date when the product was added
+
+    // Constructor to initialize a product
+    public Product(String description, double price, String seller) {
+        this.description = description;
+        this.price = price;
+        this.seller = seller;
+        this.addedDate = new Date(); // Set the added date to the current date
+    }
+
+    // Getters for product attributes
+    public String getDescription() { return description; }
+    public double getPrice() { return price; }
+    public String getSeller() { return seller; }
+    public Date getAddedDate() { return addedDate; }
+
+    // Override toString() to display product details
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return "Description: " + description + ", Price: $" + String.format("%.2f", price) +
+                ", Seller: " + seller + ", Added on: " + dateFormat.format(addedDate);
+    }
+}
+
+// Class representing the Inventory
+class Inventory {
+    private ArrayList<Product> products = new ArrayList<>(); // List to store products
+
+    // Method to add a product to the inventory
+    public void addProduct(Product product) {
+        products.add(product);
+        System.out.println("Product added to inventory on: " + new Date());
+    }
+
+    // Method to delete a product from the inventory by index
+    public void deleteProduct(int index) {
+        if (index >= 0 && index < products.size()) {
+            products.remove(index);
+            System.out.println("Product deleted from inventory on: " + new Date());
+        } else {
+            System.out.println("Invalid product index.");
+        }
+    }
+
+    // Method to get a product by index
+    public Product getProduct(int index) {
+        if (index >= 0 && index < products.size()) {
+            return products.get(index);
+        }
+        return null; // Return null if the index is invalid
+    }
+
+    // Method to list all products in the inventory
+    public void listProducts() {
+        if (products.isEmpty()) {
+            System.out.println("Inventory is empty.");
+            return;
+        }
+        System.out.println("--- Inventory ---");
+        for (int i = 0; i < products.size(); i++) {
+            System.out.println((i + 1) + ". " + products.get(i)); // Display each product with a number
+        }
+        System.out.println("------------------");
+    }
+
+    // Method to check if the inventory is empty
+    public boolean isEmpty() {
+        return products.isEmpty();
+    }
+
+    // Method to get the size of the inventory
+    public int size() {
+        return products.size();
+    }
+}
+
+// Class representing a Sale
+class Sale {
+    private Product product;    // Product being sold
+    private String purchaser;   // Name of the purchaser
+    private Date purchaseDate;  // Date of the purchase
+
+    // Constructor to initialize a sale
+    public Sale(Product product, String purchaser) {
+        this.product = product;
+        this.purchaser = purchaser;
+        this.purchaseDate = new Date(); // Set the purchase date to the current date
+    }
+
+    // Getter for purchase date
+    public Date getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    // Override toString() to display sale details
+    @Override
+    public String toString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return "Product: " + product.getDescription() + ", Purchased by: " + purchaser +
+                " on: " + dateFormat.format(purchaseDate);
+    }
+}
+
+// Class representing the Sales Record
+class SalesRecord {
+    private ArrayList<Sale> sales = new ArrayList<>(); // List to store sales
+
+    // Method to record a sale
+    public void recordSale(Sale sale) {
+        sales.add(sale);
+        System.out.println("Sale recorded on: " + sale.getPurchaseDate());
+    }
+
+    // Method to list all sold products
+    public void listSoldProducts() {
+        if (sales.isEmpty()) {
+            System.out.println("No products have been sold yet.");
+            return;
+        }
+        System.out.println("--- Sold Products ---");
+        for (Sale sale : sales) {
+            System.out.println(sale); // Display each sale
+        }
+        System.out.println("---------------------");
+    }
+}
+
+// Class representing a Wishlist
+class Wishlist {
+    private ArrayList<Product> items = new ArrayList<>(); // List to store wishlist items
+
+    // Method to add a product to the wishlist
+    public void addToWishlist(Product product) {
+        items.add(product);
+        System.out.println("Added to wishlist: " + product.getDescription());
+    }
+
+    // Method to display the wishlist
+    public void showWishlist() {
+        if (items.isEmpty()) {
+            System.out.println("Your wishlist is empty.");
+            return;
+        }
+        System.out.println("--- Wishlist ---");
+        for (Product product : items) {
+            System.out.println(product); // Display each product in the wishlist
+        }
+        System.out.println("----------------");
+    }
+}
+
+// Main class for the Inventory Management System
+public class InventoryApp {
+    private static Inventory inventory = new Inventory(); // Create an inventory object
+    private static SalesRecord salesRecord = new SalesRecord(); // Create a sales record object
+    private static Wishlist wishlist = new Wishlist(); // Create a wishlist object
+    private static Scanner scanner = new Scanner(System.in); // Create a scanner for user input
+
+    // Main method to run the program
+    public static void main(String[] args) {
+        int choice;
+        do {
+            // Display the main menu
+            System.out.println("\n--- Inventory Management System ---");
+            System.out.println("1. Show Inventory");
+            System.out.println("2. Add Inventory");
+            System.out.println("3. Delete Inventory");
+            System.out.println("4. Purchase Product");
+            System.out.println("5. Show Sold Products");
+            System.out.println("6. Add to Wishlist");
+            System.out.println("7. Show Wishlist");
+            System.out.println("0. Exit");
+            System.out.print("Enter your choice: ");
+            choice = getIntInput(); // Get the user's choice
+
+            // Handle the user's choice
+            switch (choice) {
+                case 1:
+                    inventory.listProducts(); // Show inventory
+                    break;
+                case 2:
+                    addInventory(); // Add a product to inventory
+                    break;
+                case 3:
+                    deleteInventory(); // Delete a product from inventory
+                    break;
+                case 4:
+                    purchaseProduct(); // Purchase a product
+                    break;
+                case 5:
+                    salesRecord.listSoldProducts(); // Show sold products
+                    break;
+                case 6:
+                    addToWishlist(); // Add a product to the wishlist
+                    break;
+                case 7:
+                    wishlist.showWishlist(); // Show the wishlist
+                    break;
+                case 0:
+                    System.out.println("Exiting system. Goodbye!"); // Exit the program
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again."); // Handle invalid input
+            }
+        } while (choice != 0); // Repeat until the user chooses to exit
+        scanner.close(); // Close the scanner
+    }
+
+    // Method to add a product to the inventory
+    private static void addInventory() {
+        System.out.println("\n--- Add New Inventory ---");
+        System.out.print("Enter product description: ");
+        String description = scanner.nextLine();
+        while (description.isEmpty()) {
+            System.out.println("Description cannot be empty. Please enter a valid description.");
+            description = scanner.nextLine();
+        }
+
+        System.out.print("Enter product price: ");
+        double price = getPositiveDoubleInput(); // Get a valid positive price
+
+        System.out.print("Enter seller name: ");
+        String seller = scanner.nextLine();
+        while (seller.isEmpty()) {
+            System.out.println("Seller name cannot be empty. Please enter a valid seller name.");
+            seller = scanner.nextLine();
+        }
+
+        Product newProduct = new Product(description, price, seller); // Create a new product
+        inventory.addProduct(newProduct); // Add the product to the inventory
+    }
+
+    // Method to delete a product from the inventory
+    private static void deleteInventory() {
+        System.out.println("\n--- Delete Inventory ---");
+        if (inventory.isEmpty()) {
+            System.out.println("Inventory is empty. Nothing to delete.");
+            return;
+        }
+        inventory.listProducts(); // Show the inventory
+        System.out.print("Enter the number of the product to delete: ");
+        int productNumber = getIntInput(); // Get the product number to delete
+        inventory.deleteProduct(productNumber - 1); // Delete the product (adjust for 0-based index)
+    }
+
+    // Method to purchase a product
+    private static void purchaseProduct() {
+        System.out.println("\n--- Purchase Product ---");
+        if (inventory.isEmpty()) {
+            System.out.println("Inventory is empty. Nothing to purchase.");
+            return;
+        }
+        inventory.listProducts(); // Show the inventory
+        System.out.print("Enter the number of the product to purchase: ");
+        int productNumber = getIntInput(); // Get the product number to purchase
+
+        Product productToPurchase = inventory.getProduct(productNumber - 1); // Get the product
+        if (productToPurchase != null) {
+            System.out.print("Enter purchaser name: ");
+            String purchaserName = scanner.nextLine();
+            while (purchaserName.isEmpty()) {
+                System.out.println("Purchaser name cannot be empty. Please enter a valid name.");
+                purchaserName = scanner.nextLine();
+            }
+            Sale newSale = new Sale(productToPurchase, purchaserName); // Create a new sale
+            salesRecord.recordSale(newSale); // Record the sale
+            inventory.deleteProduct(productNumber - 1); // Remove the product from inventory
+        } else {
+            System.out.println("Invalid product number.");
+        }
+    }
+
+    // Method to add a product to the wishlist
+    private static void addToWishlist() {
+        System.out.println("\n--- Add to Wishlist ---");
+        if (inventory.isEmpty()) {
+            System.out.println("Inventory is empty. Nothing to add to wishlist.");
+            return;
+        }
+        inventory.listProducts(); // Show the inventory
+        System.out.print("Enter the number of the product to add to wishlist: ");
+        int productNumber = getIntInput(); // Get the product number to add to the wishlist
+
+        Product productToAdd = inventory.getProduct(productNumber - 1); // Get the product
+        if (productToAdd != null) {
+            wishlist.addToWishlist(productToAdd); // Add the product to the wishlist
+        } else {
+            System.out.println("Invalid product number.");
+        }
+    }
+
+    // Helper method to get a valid integer input from the user
+    private static int getIntInput() {
+        while (true) {
+            try {
+                return scanner.nextInt(); // Try to read an integer
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid integer.");
+                scanner.next(); // Clear the invalid input
+            } finally {
+                scanner.nextLine(); // Consume the newline character
+            }
+        }
+    }
+
+    // Helper method to get a valid positive double input from the user
+    private static double getPositiveDoubleInput() {
+        while (true) {
+            try {
+                double input = scanner.nextDouble(); // Try to read a double
+                if (input > 0) {
+                    return input; // Return the input if it's positive
+                } else {
+                    System.out.println("Price must be positive. Please enter a valid price.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.next(); // Clear the invalid input
+            } finally {
+                scanner.nextLine(); // Consume the newline character
+            }
+        }
+    }
+}
